@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SavdoGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f4f4f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        main {
+            flex: 1;
+        }
+        header {
+            background: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .profile-btn,
+        .cart-btn,
+        .chatbot-btn,
+        .catalog-btn {
+            background: #fff;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .profile-btn:hover,
+        .cart-btn:hover,
+        .chatbot-btn:hover,
+        .catalog-btn:hover {
+            transform: scale(1.1);
+        }
+        .profile-btn i,
+        .cart-btn i,
+        .chatbot-btn i,
+        .catalog-btn i {
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s;
+        }
+        .profile-btn:hover i,
+        .cart-btn:hover i,
+        .chatbot-btn:hover i,
+        .catalog-btn:hover i {
+            color: #0057a3;
+        }
+        .cart-count {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #e91e63;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-section {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-section input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        .product {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        .product img {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .product h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .product p {
+            font-weight: 700;
+            color: #e91e63;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .product button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: auto;
+            transition: background 0.3s;
+        }
+        .product button:hover {
+            background: #45a049;
+        }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .quantity-selector button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .quantity-selector button:hover {
+            background: #45a049;
+        }
+        .cart-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .cart-form.active {
+            display: block;
+        }
+        .cart-items {
+            margin: 10px 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .cart-form button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .cart-form .submit-btn {
+            background: #4caf50;
+            color: white;
+        }
+        .cart-form .close-btn {
+            background: #dc3545;
+            color: white;
+        }
+        .receipt-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1003;
+            width: 90%;
+            max-width: 400px;
+        }
+        .receipt-modal.active {
+            display: block;
+        }
+        .chatbot-container {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            height: 450px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1006;
+            flex-direction: column;
+        }
+        .chatbot-container.active {
+            display: flex;
+        }
+        .chatbot-header {
+            background: #0057a3;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chatbot-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .chatbot-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .chatbot-message.user {
+            background: #e0f7fa;
+            margin-left: 20%;
+            text-align: right;
+            border-right: 4px solid #4caf50;
+        }
+        .chatbot-message.bot {
+            background: #f5f5f5;
+            margin-right: 20%;
+            border-left: 4px solid #0057a3;
+        }
+        .chatbot-message img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+        .chatbot-input {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .chatbot-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .chatbot-input button {
+            background: #0057a3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .quick-replies {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .quick-replies button {
+            background: #f0f0f0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .quick-replies button:hover {
+            background: #e0e0e0;
+        }
+        footer {
+            background: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            color: #666;
+            font-size: 14px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            .chatbot-container {
+                width: 90%;
+                height: 80%;
+                right: 5%;
+                bottom: 10px;
+            }
+            .products {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+            }
+            .search-section input {
+                min-width: 150px;
+                font-size: 14px;
+            }
+        }
+        .footer-contact{
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .footer-logo{
+            margin-bottom: 10px;
+        }
+        .footer-link a{
+            gap: 10px;
+        }
+        a{
+            list-style: none;
+            text-decoration: none;
+            color: #666;
+            
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">SavdoGo</div>
+        <div class="header-buttons">
+            <select id="languageSelect" onchange="updateLang()">
+                <option value="uz">O'zbek</option>
+                <option value="ru">Русский</option>
+            </select>
+            <button onclick="showCatalog()" class="catalog-btn" title="Katalog">
+                <i class="material-icons">list</i>
+            </button>
+            <button onclick="showCartModal()" class="cart-btn" title="Savat">
+                <i class="material-icons">shopping_cart</i>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+            <button onclick="toggleChatbot()" class="chatbot-btn" title="AI Yordamchi">
+                <i class="material-icons">chat</i>
+            </button>
+        </div>
+    </header>
+    <main>
+        <div class="search-section">
+            <input type="search" id="searchInput" placeholder="Mahsulot qidirish (masalan: 'smartfon')" onkeypress="if(event.key === 'Enter') performSearch()">
+        </div>
+        <div id="products" class="products"></div>
+        <div class="cart-form" id="cartModal">
+            <h3>Savat</h3>
+            <div class="cart-items" id="cartItems"></div>
+            <p id="totalPrice" style="font-weight: bold; text-align: right;"></p>
+            <button class="submit-btn" onclick="submitCart()">Tasdiqlash</button>
+            <button class="close-btn" onclick="closeCartModal()">Yopish</button>
+        </div>
+        <div class="receipt-modal" id="receiptModal">
+            <h3>Buyurtma Cheki</h3>
+            <div id="receiptContent"></div>
+            <button class="close-btn" onclick="closeReceiptModal()">Yopish</button>
+        </div>
+        <div class="chatbot-container" id="chatbotContainer">
+            <div class="chatbot-header">
+                <h3>AI Yordamchi</h3>
+                <button onclick="toggleChatbot()">−</button>
+            </div>
+            <div class="chatbot-messages" id="chatBody"></div>
+            <div class="chatbot-input">
+                <input type="text" id="chatInput" placeholder="Savol kiriting..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()">Yuborish</button>
+                <div class="quick-replies">
+                    <button onclick="sendQuickReply('Smartfonlar')">Smartfonlar</button>
+                    <button onclick="sendQuickReply('Kredit')">Kredit</button>
+                    <button onclick="sendQuickReply('Manzil')">Manzil</button>
+                    <button onclick="sendQuickReply('Registratsiya')">Registratsiya</button>
+                    <button onclick="sendQuickReply('Katalog')">Katalog</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">SavdoGo</div>
+            <div class="footer-links">
+                <a href="./biz-haqimizda.html">Biz haqimizda</a>
+                <a href="./ishga.html">Ishga Qabul</a>
+            </div>
+            <div class="footer-contact">
+                <p>Telefon: +998 (93) 857-33-11</p>
+            </div>
+            <div class="footer-contact">
+                 <p>Email: support@savdogo.com</p>
+            </div>
+        </div>
+        <div class="footer-copyright">© 2025 SavdoGo. Barcha huquqlar himoyalangan.</div>
+    </footer>
+    <script src="./script.js"></script>
+</body>
+</html> 
